@@ -12,19 +12,19 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import {IMG_APPICON, IMG_HISTORY, IMG_UPLOAD} from '@/assets/images';
-import FONTS from '@/constants/font';
-import {COLORS} from '@/constants/color';
+import {IMG_APPICON, IMG_HISTORY, IMG_UPLOAD} from '../assets/images';
+import FONTS from '../constants/font';
+import {COLORS} from '../constants/color';
 //import { Cloudinary } from "@cloudinary/url-gen";
 // import * as FS from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 
 // import {Buffer} from 'buffer';
 // import axios from 'axios';
-import { useNavigation } from 'expo-router';
+
 import * as FileSystem from 'expo-file-system';
 // import * as FileSystem from 'expo-file-system';
-import scale from '@/constants/responsive';
+import scale from '../constants/responsive';
 
 // create a component
 const MainScreen = ({props, route, navigation}) => {
@@ -33,7 +33,6 @@ const MainScreen = ({props, route, navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [file,setFile] = useState({});
   const [uri, setUri] = useState();
-  const nvg = useNavigation();
   // const [timeLoading, setTimeLoading] = useState(0);
   // const [uri, setUri] = useState();
   // const countRef = useRef(null);
@@ -58,6 +57,7 @@ const MainScreen = ({props, route, navigation}) => {
     setCameraRollPer(cameraRollPer), setDisableButton(true);
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
+      base64: true,
     });
     if (result.canceled) {
       console.log('there is nothing');
@@ -70,7 +70,13 @@ const MainScreen = ({props, route, navigation}) => {
     }
     if (result.assets[0].type === 'image') {
       console.log('uri', result.assets[0].uri);
+      // await toServer({
+      //   type: result.assets[0].type,
+      //   base64: result.assets[0].base64,
+      //   uri: result.assets[0].uri,
+      //});
 
+      //setUri(result.assets[0].uri);
       const uri = result.assets[0].uri;
       const fileInfo = await FileSystem.getInfoAsync(uri);
       const extension = fileInfo.uri.split('.').pop();
@@ -82,10 +88,16 @@ const MainScreen = ({props, route, navigation}) => {
         type,
         name,
       };
-      console.log(source);
-      await UploadImageToServer(source);
+      //console.log(result.assets[0]);
+      await cloudinaryUploadImage(source);
     } else {
-
+      // console.log(result.assets[0].type + " false");
+      // let base64 = await uriToBase64(result.assets[0].uri);
+      // await toServer({
+      //   type: result.assets[0].type,
+      //   base64: base64,
+      //   uri: result.assets[0].uri,
+      // });
       console.log(result);
       const uri = result.assets[0].uri;
       const type = result.assets[0].type + '/mp4';
@@ -96,105 +108,42 @@ const MainScreen = ({props, route, navigation}) => {
         name,
       };
       console.log(source.name);
-      await UploadImageToServer(source);
+      await cloudinaryUpload(source);
     }
   };
-  const UploadImageToServer = async photo => {
+  const cloudinaryUploadImage = async photo => {
     const data = new FormData();
-    // data.append('file', photo);
-    // data.append('upload_preset', 'videoApp');
-    // data.append('cloud_name', 'dpej7xgsi');
-    // fetch('https://api.cloudinary.com/v1_1/dpej7xgsi/image/upload', {
-    //   method: 'POST',
-    //   body: data,
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // })
-    //   .then(res => res.json())
-    //   .then(async data => {
-    //     console.log(data);
-    //     console.log('ok, go to server');
-    //     console.log(data.url);
-    //     // await toServer({
-    //     //   type: 'image',
-    //     //   base64: data.url,
-    //     //   uri: data.url,
-    //     // });
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //     Alert.alert(
-    //       'Lỗi tải file',
-    //       'Quá trình tải file lên server gặp lỗi, vui lòng thử lại\nStatus code: ' +
-    //         error,
-    //     );
-    //     setIsLoading(false);
-    //   });
-    const formData = new FormData();
-    const file = {
-      uri: photo.uri,
-      type: photo.type,
-      name: photo.name,
-    };
-  formData.append('file', file);
-    console.log(file)
-    if (file.type == "image/png"){
-          const res = await fetch('https://facedetectionbackend-adcg.onrender.com/image', {
-            //const res = await fetch('http://192.168.1.113:5000/image', {
-              method: 'POST',
-              body: formData,
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'multipart/form-data',
-              },
-            }).then((response) => response.json())
-            .then(async (responseJson) => {
-              console.log('Response:', responseJson);
-              console.log('Response:', responseJson);
-          
-              // Assuming responseJson contains the URI of the uploaderd image
-              const { url } = responseJson;
-              setIsLoading(false)
-              // // Navigate to ShowImageScreen with the retrieved URI
-              nvg.navigate('ShowImageScreen/index', {uri: url, content_type:file.type});
-        
-            })
-            .catch((error) => {
-              console.error('Error:', error);
-              setIsLoading(false)
-            });
-            console.log(res)        
-    }
-    else {
-    const res = await fetch('https://facedetectionbackend-adcg.onrender.com/video', {
-      //const res = await fetch('http://192.168.1.113:5000/video', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
-      }).then((response) => response.json())
-      .then(async (responseJson) => {
-        console.log('Response:', responseJson);
-        console.log('Response:', responseJson);
-    
-        // Assuming responseJson contains the URI of the uploaderd image
-        const { url } = responseJson;
-        setIsLoading(false)
-        // // Navigate to ShowImageScreen with the retrieved URI
-        nvg.navigate('ShowImageScreen/index', {uri: url, content_type:file.type});
-  
+    data.append('file', photo);
+    data.append('upload_preset', 'videoApp');
+    data.append('cloud_name', 'dpej7xgsi');
+    fetch('https://api.cloudinary.com/v1_1/dpej7xgsi/image/upload', {
+      method: 'POST',
+      body: data,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+      .then(res => res.json())
+      .then(async data => {
+        console.log(data);
+        console.log('ok, go to server');
+        console.log(data.url);
+        // await toServer({
+        //   type: 'image',
+        //   base64: data.url,
+        //   uri: data.url,
+        // });
       })
-      .catch((error) => {
-        console.error('Error:', error);
-        setIsLoading(false)
+      .catch(error => {
+        console.log(error);
+        Alert.alert(
+          'Lỗi tải file',
+          'Quá trình tải file lên server gặp lỗi, vui lòng thử lại\nStatus code: ' +
+            error,
+        );
+        setIsLoading(false);
       });
-      console.log(res)
-  
-    }
   };
   const cloudinaryUpload = async photo => {
     const data = new FormData();
