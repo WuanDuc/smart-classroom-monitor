@@ -141,8 +141,8 @@ const MainScreen = ({props, route, navigation}) => {
   formData.append('file', file);
     console.log(file)
     if (file.type == "image/png"){
-          const res = await fetch('https://facedetectionbackend-adcg.onrender.com/image', {
-            //const res = await fetch('http://192.168.1.113:5000/image', {
+          //const res = await fetch('https://facedetectionbackend-adcg.onrender.com/image', {
+            const res = await fetch('http://192.168.1.113:5000/image', {
               method: 'POST',
               body: formData,
               headers: {
@@ -155,10 +155,14 @@ const MainScreen = ({props, route, navigation}) => {
               console.log('Response:', responseJson);
           
               // Assuming responseJson contains the URI of the uploaderd image
-              const { url } = responseJson;
+              const { url, emotion_counts } = responseJson;
               setIsLoading(false)
               // // Navigate to ShowImageScreen with the retrieved URI
-              nvg.navigate('ShowImageScreen/index', {uri: url, content_type:file.type});
+              nvg.navigate('ShowImageScreen/index', {
+                uri: url,
+                content_type: file.type,
+                emotion: emotion_counts
+              });
         
             })
             .catch((error) => {
@@ -168,8 +172,8 @@ const MainScreen = ({props, route, navigation}) => {
             console.log(res)        
     }
     else {
-    const res = await fetch('https://facedetectionbackend-adcg.onrender.com/video', {
-      //const res = await fetch('http://192.168.1.113:5000/video', {
+    //const res = await fetch('https://facedetectionbackend-adcg.onrender.com/video', {
+      const res = await fetch('http://192.168.1.113:5000/video', {
         method: 'POST',
         body: formData,
         headers: {
@@ -182,10 +186,14 @@ const MainScreen = ({props, route, navigation}) => {
         console.log('Response:', responseJson);
     
         // Assuming responseJson contains the URI of the uploaderd image
-        const { url } = responseJson;
+        const { url, emotion_counts } = responseJson;
         setIsLoading(false)
         // // Navigate to ShowImageScreen with the retrieved URI
-        nvg.navigate('ShowImageScreen/index', {uri: url, content_type:file.type});
+        nvg.navigate('ShowImageScreen/index', {
+          uri: url,
+          content_type: file.type,
+          emotion: emotion_counts
+        });
   
       })
       .catch((error) => {

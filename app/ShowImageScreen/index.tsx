@@ -24,7 +24,7 @@ import {COLORS} from '@/constants/color';
 // import {Video, ResizeMode} from 'expo-av';
 import RNFS from 'react-native-fs';
 // import Share from 'react-native-share';
-// import * as MediaLibrary from 'expo-media-library';
+//import * as MediaLibrary from 'expo-media-library';
 import scale from '@/constants/responsive';
 import Barchart from '@/components/BarChart';
 import { useLocalSearchParams } from 'expo-router';
@@ -34,7 +34,7 @@ import { WebView } from 'react-native-webview';
 import { useNavigation } from 'expo-router';
 const ShowImageScreen = () => {
   const nav = useNavigation();
-  const { uri, content_type } = useLocalSearchParams()  ;
+  const { uri, content_type, emotion } = useLocalSearchParams();
   const [emoString, setEmostring] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [sumEmo, setSumemo] = useState<number>(0);
@@ -164,58 +164,25 @@ const ShowImageScreen = () => {
   // if (status._j == null || status._j != null && status._j._j != null && !status._j._j.granted) {
   //   return <Text>We need your library permi</Text>
   // }
-  useEffect(()=> {
-    console.log(uri)
-    console.log(content_type)
-  })
-  const dataChart = [
-    {
-      emoFull: 'Neutral',
-      emo: 'neu',
-      amount: 1,
-    },
-    {
-      emoFull: 'Happy',
-      emo: 'hap',
-      amount: 1,
-    },
-    {
-      emoFull: 'Sad',
-      emo: 'sad',
-      amount: 1,
-    },
-    {
-      emoFull: 'Angry',
-      emo: 'ang',
-      amount: 1,
-    },
-    {
-      emoFull: 'Fear',
-      emo: 'fear',
-      amount: 1,
-    },
-    {
-      emoFull: 'Disgust',
-      emo: 'dis',
-      amount: 1,
-    },
-    {
-      emoFull: 'Surprise',
-      emo: 'sup',
-      amount: 1,
-    },
-  ];
-
+  const [dataChart, setDataChart] = useState([
+    { emoFull: 'Neutral', emo: 'neu', amount: 0 },
+    { emoFull: 'Happy', emo: 'hap', amount: 0 },
+    { emoFull: 'Sad', emo: 'sad', amount: 0 },
+    { emoFull: 'Angry', emo: 'ang', amount: 0 },
+    { emoFull: 'Fear', emo: 'fear', amount: 0 },
+    { emoFull: 'Disgust', emo: 'dis', amount: 0 },
+    { emoFull: 'Surprise', emo: 'sup', amount: 0 },
+  ]);
   const findMaxEmo = () => {
     let max: number = 0;
-    dataChart.map(item => {
+    dataChart.forEach(item => {
       if (item.amount > max) {
         max = item.amount;
       }
     });
 
     let temp: string[] = [];
-    dataChart.map(item => {
+    dataChart.forEach(item => {
       if (item.amount === max) {
         temp.push(item.emoFull);
       }
@@ -229,11 +196,11 @@ const ShowImageScreen = () => {
   };
 
   useEffect(() => {
+    //setDataChart(emotion)
     findMaxEmo();
-    dataChart.map(item => {
-      setSumemo(sumEmo => sumEmo + item.amount);
-    });
-  }, []);
+    const totalEmo = dataChart.reduce((sum, item) => sum + item.amount, 0);
+    setSumemo(totalEmo);
+  }, [dataChart]);
 
   return (
     <View style={styles.container}>

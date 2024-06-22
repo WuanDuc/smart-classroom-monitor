@@ -1,6 +1,12 @@
 {
-  "name": "EmoScan",
-  "displayName": "EmoScan",
-  "scheme": "EmoScan",
-  "slug": "my-app"
+  "expo": {
+    "name": "EmoScan",
+    "displayName": "EmoScan",
+    "scheme": "EmoScan",
+    "slug": "my-app",
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
+    ]
+  }
 }
