@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 //import liraries
-import React, {Component, useEffect, useState} from 'react';
+import React, { Component, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-} from 'react-native';
+} from "react-native";
 import {
   IMG_APPICON,
   IMG_APPICONNOTEXT,
@@ -18,18 +18,18 @@ import {
   IMG_SAVE,
   IMG_SHARE,
   IMG_UPLOAD,
-} from '../assets/images';
-import FONTS from '../constants/font';
-import {COLORS} from '../constants/color';
+} from "../assets/images";
+import FONTS from "../constants/font";
+import { COLORS } from "../constants/color";
 // import {Video, ResizeMode} from 'expo-av';
 // import RNFS from 'react-native-fs';
 // import Share from 'react-native-share';
 // import * as MediaLibrary from 'expo-media-library';
-import scale from '../constants/responsive';
-import Barchart from '../components/BarChart';
+import scale from "../constants/responsive";
+import Barchart from "../components/BarChart";
 
 // create a component
-const ShowImageScreen = ({props, route, navigation}) => {
+const ShowImageScreen = ({ props, route, navigation }) => {
   const { uri } = route.params;
   const [emoString, setEmostring] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -39,8 +39,8 @@ const ShowImageScreen = ({props, route, navigation}) => {
   // );
 
   // const {dataType, data, content_type} = route.params;
-  const data = 'abc';
-  const content_type = 'image';
+  const data = "abc";
+  const content_type = "image";
 
   // const ShareData = async () => {
   //   const shareOptions = {
@@ -163,59 +163,59 @@ const ShowImageScreen = ({props, route, navigation}) => {
 
   const dataChart = [
     {
-      emoFull: 'Neutral',
-      emo: 'neu',
+      emoFull: "Neutral",
+      emo: "neu",
       amount: 1,
     },
     {
-      emoFull: 'Happy',
-      emo: 'hap',
+      emoFull: "Happy",
+      emo: "hap",
       amount: 1,
     },
     {
-      emoFull: 'Sad',
-      emo: 'sad',
+      emoFull: "Sad",
+      emo: "sad",
       amount: 1,
     },
     {
-      emoFull: 'Angry',
-      emo: 'ang',
+      emoFull: "Angry",
+      emo: "ang",
       amount: 1,
     },
     {
-      emoFull: 'Fear',
-      emo: 'fear',
+      emoFull: "Fear",
+      emo: "fear",
       amount: 1,
     },
     {
-      emoFull: 'Disgust',
-      emo: 'dis',
+      emoFull: "Disgust",
+      emo: "dis",
       amount: 1,
     },
     {
-      emoFull: 'Surprise',
-      emo: 'sup',
+      emoFull: "Surprise",
+      emo: "sup",
       amount: 1,
     },
   ];
 
   const findMaxEmo = () => {
     let max: number = 0;
-    dataChart.map(item => {
+    dataChart.map((item) => {
       if (item.amount > max) {
         max = item.amount;
       }
     });
 
     let temp: string[] = [];
-    dataChart.map(item => {
+    dataChart.map((item) => {
       if (item.amount === max) {
         temp.push(item.emoFull);
       }
     });
 
     if (max === 0) {
-      setEmostring(['No Emotion']);
+      setEmostring(["No Emotion"]);
     } else {
       setEmostring(temp);
     }
@@ -223,8 +223,8 @@ const ShowImageScreen = ({props, route, navigation}) => {
 
   useEffect(() => {
     findMaxEmo();
-    dataChart.map(item => {
-      setSumemo(sumEmo => sumEmo + item.amount);
+    dataChart.map((item) => {
+      setSumemo((sumEmo) => sumEmo + item.amount);
     });
   }, []);
 
@@ -235,12 +235,13 @@ const ShowImageScreen = ({props, route, navigation}) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
+          Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
-        }}>
+        }}
+      >
         <View style={styles.mainModalView}>
           <View style={styles.modalView}>
-            <Text style={[styles.text, {color: '#136D11', marginBottom: 10}]}>
+            <Text style={[styles.text, { color: "#136D11", marginBottom: 10 }]}>
               Emotions Detail
             </Text>
             {dataChart.map((item, index) => {
@@ -249,30 +250,33 @@ const ShowImageScreen = ({props, route, navigation}) => {
                   {index % 2 == 0 ? (
                     <View
                       style={{
-                        width: '100%',
-                        flexDirection: 'row',
+                        width: "100%",
+                        flexDirection: "row",
                         justifyContent:
                           index === dataChart.length
-                            ? 'center'
-                            : 'space-around',
-                      }}>
+                            ? "center"
+                            : "space-around",
+                      }}
+                    >
                       <Text
                         style={{
                           fontFamily: FONTS.Lato.Medium,
                           fontSize: 20,
-                          color: '#3F8742',
-                        }}>
-                        {item.emoFull + ': ' + item.amount}
+                          color: "#3F8742",
+                        }}
+                      >
+                        {item.emoFull + ": " + item.amount}
                       </Text>
                       <Text
                         style={{
                           fontFamily: FONTS.Lato.Medium,
                           fontSize: 20,
-                          color: '#3F8742',
-                        }}>
+                          color: "#3F8742",
+                        }}
+                      >
                         {dataChart[index + 1] != undefined
-                          ? dataChart[index + 1].emoFull + ': ' + item.amount
-                          : ''}
+                          ? dataChart[index + 1].emoFull + ": " + item.amount
+                          : ""}
                       </Text>
                     </View>
                   ) : (
@@ -282,8 +286,9 @@ const ShowImageScreen = ({props, route, navigation}) => {
               );
             })}
             <TouchableOpacity
-              style={[styles.button, {marginTop: 15}]}
-              onPress={() => setModalVisible(!modalVisible)}>
+              style={[styles.button, { marginTop: 15 }]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
               <Text style={styles.text}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -291,7 +296,7 @@ const ShowImageScreen = ({props, route, navigation}) => {
       </Modal>
       <View style={styles.mainView}>
         <Text style={styles.text}>Result</Text>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: "row" }}>
           <TouchableOpacity>
             <Image style={styles.image} source={IMG_SAVE}></Image>
           </TouchableOpacity>
@@ -300,7 +305,7 @@ const ShowImageScreen = ({props, route, navigation}) => {
           </TouchableOpacity>
         </View>
       </View>
-      {content_type == 'video/mp4' ? (
+      {content_type == "video/mp4" ? (
         // <WebView style={{ flex: 1, width: 200, height: 200, resizeMode: 'contain' }}
         // source={{ html: htmlcode, baseurl: rnfetchblob.fs.dirs.dcimdir }}/>
         // <Video
@@ -338,7 +343,7 @@ const ShowImageScreen = ({props, route, navigation}) => {
       </View>
       {sumEmo === 0 ? (
         <View style={styles.noChartContainer}>
-          <Text style={[styles.text, {color: 'gray'}]}>NO CHART HERE</Text>
+          <Text style={[styles.text, { color: "gray" }]}>NO CHART HERE</Text>
         </View>
       ) : (
         <Barchart
@@ -351,7 +356,9 @@ const ShowImageScreen = ({props, route, navigation}) => {
 
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.button} onPress={goBackToHome}>
-          <Text style={[styles.text, {fontSize: scale(35)}]}>Back to Home</Text>
+          <Text style={[styles.text, { fontSize: scale(35) }]}>
+            Back to Home
+          </Text>
         </TouchableOpacity>
         <Image style={styles.iconApp} source={IMG_APPICON} />
       </View>
@@ -363,45 +370,45 @@ const ShowImageScreen = ({props, route, navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: COLORS.lightGreen,
   },
   mainView: {
     marginTop: scale(30),
     height: scale(40),
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
   },
   text: {
     fontFamily: FONTS.Lato.Bold,
     fontSize: 22,
     color: COLORS.black,
-    textAlign: 'center',
+    textAlign: "center",
   },
   image: {
     height: 40,
     width: 40,
-    overflow: 'visible',
+    overflow: "visible",
     marginLeft: 10,
   },
   resultImage: {
     marginTop: 20,
     marginBottom: scale(10),
     backgroundColor: COLORS.green,
-    height: '30%',
-    width: '100%',
-    resizeMode: 'contain',
+    height: "30%",
+    width: "100%",
+    resizeMode: "contain",
     // borderWidth: 3,
     // borderColor: "purple",
     // borderRadius: 10,
   },
   button: {
     height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: COLORS.grayButton,
     paddingHorizontal: 15,
     paddingVertical: 5,
@@ -412,24 +419,24 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     elevation: 5,
     shadowRadius: 23,
-    shadowOffset: {width: 1, height: 13},
+    shadowOffset: { width: 1, height: 13 },
   },
   mainModalView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 22,
   },
   modalView: {
     height: scale(400),
     width: 300,
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     paddingHorizontal: 35,
     paddingVertical: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -437,33 +444,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
   },
   detailText: {
     color: COLORS.black,
-    textAlign: 'center',
+    textAlign: "center",
     fontFamily: FONTS.Lato.Medium,
     fontSize: 15,
-    alignSelf: 'flex-end',
-    textDecorationLine: 'underline',
+    alignSelf: "flex-end",
+    textDecorationLine: "underline",
   },
   belowResultContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '95%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "95%",
   },
   noChartContainer: {
     height: scale(350),
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   bottomContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    position: 'absolute',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    position: "absolute",
     bottom: scale(20),
-    alignItems: 'center',
-    width: '90%',
+    alignItems: "center",
+    width: "90%",
     height: scale(80),
   },
   iconApp: {
