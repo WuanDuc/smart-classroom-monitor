@@ -1,12 +1,12 @@
-import {Dimensions} from 'react-native';
+import { Dimensions } from "react-native";
 // const designWidth = 1080;
-const designHeight = 910;
+const designHeight = 800;
 // function scale(number) {
 //   return (number * Dimensions.get('window').width) / designWidth;
 // }
 
 function scale(number) {
-  return (number * Dimensions.get('window').height) / designHeight;
+  return (number * Dimensions.get("window").height) / designHeight;
 }
 
 export default scale;
