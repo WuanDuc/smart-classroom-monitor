@@ -15,7 +15,7 @@ import {
   IMG_APPICON,
   IMG_APPICONNOTEXT,
   IMG_HISTORY,
-  IMG_Loading,
+  IMG_LOADING,
   IMG_SAVE,
   IMG_SHARE,
   IMG_UPLOAD,
@@ -357,7 +357,7 @@ const ShowImageScreen = () => {
             <TouchableOpacity>
               <Image style={styles.image} source={IMG_SAVE}></Image>
             </TouchableOpacity>
-            <TouchableOpacity onPress={ShareData}>
+            <TouchableOpacity >
               <Image style={styles.image} source={IMG_SHARE}></Image>
             </TouchableOpacity>
           </View>
@@ -381,7 +381,7 @@ const ShowImageScreen = () => {
           style={styles.resultImage}
           source={{
             //uri: `data:${content_type};base64, ${data}`,
-            uri: "http://res.cloudinary.com/dpej7xgsi/image/upload/v1719099589/nv5ugbtpjvkptyrnio1g.jpg",
+            uri: uri,
           }}
         ></Image>
       )}
