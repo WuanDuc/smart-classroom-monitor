@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 //import liraries
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,27 +11,19 @@ import {
   Modal,
   SafeAreaView,
 } from "react-native";
-import {
-  IMG_APPICON,
-  IMG_APPICONNOTEXT,
-  IMG_HISTORY,
-  IMG_LOADING,
-  IMG_SAVE,
-  IMG_SHARE,
-  IMG_UPLOAD,
-} from "@/assets/images";
+import { IMG_APPICON, IMG_SAVE, IMG_SHARE } from "@/assets/images";
 import FONTS from "@/constants/font";
 import { COLORS } from "@/constants/color";
-// import {Video, ResizeMode} from 'expo-av';
-import RNFS from "react-native-fs";
 import scale from "../../constants/responsive";
 import Barchart from "../../components/BarChart";
 import { useLocalSearchParams } from "expo-router";
 // create a component
 import { ResizeMode, Video } from "expo-av";
 import { useNavigation } from "expo-router";
+import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
-import Share from "react-native-share";
+import * as Sharing from "expo-sharing";
+import { storeData } from "@/utils/utils";
 
 const ShowImageScreen = () => {
   const nav = useNavigation();
@@ -39,132 +31,65 @@ const ShowImageScreen = () => {
   const [emoString, setEmostring] = useState<string>("");
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [sumEmo, setSumemo] = useState<number>(0);
-  // const [status, requestPermission] = useState(
-  //   ImagePicker.requestMediaLibraryPermissionsAsync(),
-  // );
-
-  // const {dataType, data, content_type} = route.params;
   var data = {};
-  //const content_type = 'image';
+  var isStore = "false";
 
-  // const ShareData = async () => {
-  //   const shareOptions = {
-  //     message: "Write something to your friend",
-  //     url: `data:${content_type};uri, ${uri}`,
-  //   };
+  const saveImageToLocal = async (imageUrl: string) => {
+    let splitUrl = imageUrl.split("/");
+    let temp = content_type.split("/");
+    const fileUri = FileSystem.documentDirectory + splitUrl[7];
+    await FileSystem.downloadAsync(imageUrl, fileUri);
+    console.log("Đường dẫn local:", fileUri);
+    return fileUri;
+  };
 
-  //   try {
-  //     const ShareResponse = await Share.open(shareOptions);
-  //     console.log(JSON.stringify(ShareResponse));
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const saveMedia = async (uri: string) => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Denied",
+        "We need permission to access your media library."
+      );
+      return;
+    }
 
-  // const SaveData = async () => {
-  //   // if (status._j != null && status._j._j != null && status._j._j.granted) {
-  //   if (content_type === 'video/mp4') {
-  //     await MediaLibrary.saveToLibraryAsync(
-  //       `file://${RNFS.DocumentDirectoryPath}/video.mp4`,
-  //     ).finally(() => {
-  //       Alert.alert('Thông báo', 'Lưu video thành công');
-  //     });
-  //   } else {
-  //     await MediaLibrary.saveToLibraryAsync(
-  //       `file://${RNFS.DocumentDirectoryPath}/image.jpg`,
-  //     ).finally(() => {
-  //       Alert.alert('Thông báo', 'Lưu ảnh thành công');
-  //     });
-  //   }
-  // } else {
-  //   console.log('No permission', status);
-  //   async () => {
-  //     requestPermission(
-  //       await ImagePicker.requestMediaLibraryPermissionsAsync(),
-  //     );
-  //   };
-  // }
-  // };
+    try {
+      await saveImageToLocal(uri).then(async (fileUrl) => {
+        const asset = await MediaLibrary.createAssetAsync(fileUrl);
+        Alert.alert("Success", "Image saved successfully!");
+        await MediaLibrary.createAlbumAsync("EmoScan", asset, false);
+      });
+    } catch (error) {
+      Alert.alert("Error", "Failed to save image.");
+      console.log(error);
+    }
+  };
 
-  //   function b64toblob(b64data, contenttype, slicesize) {
-  //     contenttype = contenttype || '';
-  //     slicesize = slicesize || 512;
+  const shareMedia = async (uri: string) => {
+    if (!(await Sharing.isAvailableAsync())) {
+      Alert.alert(
+        "Sharing not available",
+        "Sharing is not available on this device."
+      );
+      return;
+    }
 
-  //     var bytecharacters = atob(b64data);
-  //     var bytearrays = [];
-
-  //     for (var offset = 0; offset < bytecharacters.length; offset += slicesize) {
-  //       var slice = bytecharacters.slice(offset, offset + slicesize);
-
-  //       var bytenumbers = new array(slice.length);
-  //       for (var i = 0; i < slice.length; i++) {
-  //         bytenumbers[i] = slice.charcodeat(i);
-  //       }
-
-  //       var bytearray = new uint8array(bytenumbers);
-
-  //       bytearrays.push(bytearray);
-  //     }
-
-  //     var blob = new blob(bytearrays, {type: contenttype});
-  //     return blob;
-  // }
-
-  // const downloadToFile = base64Content => {
-  //   const path = `file://${RNFS.DocumentDirectoryPath}/video.mp4`;
-
-  //   RNFS.writeFile(path, base64Content, 'base64')
-  //     .then(success => {
-  //       console.log('FILE WRITTEN: ', 'abc');
-  //     })
-  //     .catch(err => {
-  //       console.log('File Write Error: ', err.message);
-  //       Alert.alert('Quá trình phát video gặp một số lỗi: ' + err.message);
-  //       navigation.goBack();
-  //     });
-  // };
-
-  // const downloadToFileImage = base64Content => {
-  //   const path = `file://${RNFS.DocumentDirectoryPath}/image.jpg`;
-
-  //   RNFS.writeFile(path, base64Content, 'base64')
-  //     .then(success => {
-  //       console.log('FILE WRITTEN: ', 'abc');
-  //     })
-  //     .catch(err => {
-  //       console.log('File Write Error: ', err.message);
-  //       Alert.alert('Quá trình tải ảnh gặp một số lỗi: ' + err.message);
-  //       navigation.goBack();
-  //     });
-  // };
+    try {
+      const fileUrl = await saveImageToLocal(uri);
+      const shareOptions = {
+        dialogTitle: "Emotion detection with EmoScan!",
+      };
+      await Sharing.shareAsync(fileUrl, shareOptions);
+    } catch (error) {
+      Alert.alert("Error", "Failed to share image.");
+      console.log(error);
+    }
+  };
 
   const goBackToHome = () => {
     nav.goBack();
   };
 
-  // useEffect(() => {
-  //   if (content_type == 'video/mp4') {
-  //     downloadToFile(data);
-  //   } else {
-  //     downloadToFileImage(data);
-  //   }
-
-  //   // console.log(status);
-
-  //   // if (status._j == null) {
-  //   //   requestPermission(ImagePicker.requestMediaLibraryPermissionsAsync());
-  //   // }
-
-  //   // if (status._j != null && status._j._j != null && !status._j._j.granted) {
-  //   //   (async () => {
-  //   //     await ImagePicker.requestMediaLibraryPermissionsAsync();
-  //   //   })();
-  //   // }
-  // }, []);
-
-  // if (status._j == null || status._j != null && status._j._j != null && !status._j._j.granted) {
-  //   return <Text>We need your library permi</Text>
-  // }
   const [dataChart, setDataChart] = useState([
     { emoFull: "Neutral", emo: "neu", amount: 0 },
     { emoFull: "Happy", emo: "hap", amount: 0 },
@@ -174,7 +99,7 @@ const ShowImageScreen = () => {
     { emoFull: "Disgust", emo: "dis", amount: 0 },
     { emoFull: "Surprise", emo: "sup", amount: 0 },
   ]);
-  const findMaxEmo = () => {
+  const findMaxEmo = async (dataChart: any) => {
     let max: number = 0;
     dataChart.forEach((item) => {
       if (item.amount > max) {
@@ -198,6 +123,7 @@ const ShowImageScreen = () => {
         const currentTime = currentDateTime.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
         });
         const currentDate = currentDateTime.toLocaleDateString("en-US", {
           month: "2-digit",
@@ -214,6 +140,9 @@ const ShowImageScreen = () => {
           url: uri,
           type: content_type,
         };
+        if (data.emoData == "Unknown") {
+          return;
+        }
       }
       // data = { ...data, mainEmotion: "No Emotion" };
     } else {
@@ -224,6 +153,7 @@ const ShowImageScreen = () => {
         const currentTime = currentDateTime.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
         });
         const currentDate = currentDateTime.toLocaleDateString("en-US", {
           month: "2-digit",
@@ -240,25 +170,14 @@ const ShowImageScreen = () => {
           url: uri,
           type: content_type,
         };
+        if (data.emoData == "Unknown") {
+          return;
+        }
       }
     }
+    console.log(isStore);
     if (isHistory == "false") {
-      writeHistoryFile();
-    }
-  };
-
-  const writeHistoryFile = async () => {
-    const fileUri = FileSystem.documentDirectory + "history.txt";
-    const contentToAppend = JSON.stringify(data) + "\n";
-
-    try {
-      await FileSystem.writeAsStringAsync(fileUri, contentToAppend);
-      Alert.alert("Success", "Content appended to file successfully!");
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        "Failed to append content to file: " + error.message
-      );
+      const store = await storeData(data);
     }
   };
 
@@ -272,11 +191,8 @@ const ShowImageScreen = () => {
   useEffect(() => {
     let temp = JSON.parse(emotion);
     setDataChart(temp);
+    findMaxEmo(temp);
   }, []);
-
-  useEffect(() => {
-    findMaxEmo();
-  }, [dataChart]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -354,10 +270,10 @@ const ShowImageScreen = () => {
         <View style={styles.mainView}>
           <Text style={styles.text}>Result</Text>
           <View style={{ flexDirection: "row" }}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => saveMedia(uri)}>
               <Image style={styles.image} source={IMG_SAVE}></Image>
             </TouchableOpacity>
-            <TouchableOpacity >
+            <TouchableOpacity onPress={() => shareMedia(uri)}>
               <Image style={styles.image} source={IMG_SHARE}></Image>
             </TouchableOpacity>
           </View>

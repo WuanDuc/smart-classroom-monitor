@@ -4,6 +4,7 @@ import React from "react";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import scale from "@/constants/responsive";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -24,6 +25,7 @@ export default function TabLayout() {
           backgroundColor: Colors[colorScheme ?? "light"].background,
           elevation: 0,
           shadowOpacity: 0,
+          height: scale(60),
         },
       }}
     >
