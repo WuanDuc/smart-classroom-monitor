@@ -17,6 +17,7 @@ import { useNavigation } from "expo-router";
 import { IMG_LOGO_TOGETHER, IMG_LOGO_UIT } from "../../assets/images/index";
 import HistoryCard from "@/components/HistoryCard";
 import * as FileSystem from "expo-file-system";
+import { getData } from "@/utils/utils";
 
 // create a component
 const HistoryScreen = () => {
@@ -126,7 +127,20 @@ const HistoryScreen = () => {
   };
 
   useEffect(() => {
-    readFile();
+    const loadHistory = async () => {
+      
+      const savedHistory = await getData();
+      console.log(savedHistory)
+
+      if (savedHistory) {
+        setHistory(savedHistory);
+        console.log(savedHistory)
+      }
+      else{
+        console.log("set history unsuccessfully")
+      }
+    };
+    loadHistory();
   }, []);
 
   return (

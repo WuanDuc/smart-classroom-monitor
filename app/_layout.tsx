@@ -26,6 +26,13 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     "Lato-Bold_2": require("../assets/fonts/Lato-Bold_2.ttf"),
+    "Lato-Hairline_2": require("../assets/fonts/Lato-Hairline_2.ttf"),
+    "Lato-Heavy_1": require("../assets/fonts/Lato-Heavy_1.ttf"),
+    "Lato-Black_2": require("../assets/fonts/Lato-Black_2.ttf"),
+    "Lato-Thin_0": require("../assets/fonts/Lato-Thin_0.ttf"),
+    "Lato-Italic_1": require("../assets/fonts/Lato-Italic_1.ttf"),
+    "Lato-Light_3": require("../assets/fonts/Lato-Light_3.ttf"),
+    "Lato-Regular_2": require("../assets/fonts/Lato-Regular_2.ttf"),
     "Lato-Medium_0": require("../assets/fonts/Lato-Medium_0.ttf"),
   });
 

@@ -22,7 +22,7 @@ import { COLORS } from "../../constants/color";
 //import { Cloudinary } from "@cloudinary/url-gen";
 // import * as FS from 'expo-file-system';
 import * as ImagePicker from "expo-image-picker";
-
+import { storeData, getData } from "@/utils/utils";
 // import {Buffer} from 'buffer';
 // import axios from 'axios';
 import { useNavigation } from "expo-router";
@@ -100,6 +100,23 @@ const MainScreen = ({ props, route, navigation }) => {
       await UploadImageToServer(source);
     }
   };
+  const generateRandomId = () => {
+    return 'id-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
+  };
+  const getCurrentTime = () => {
+    const date = new Date();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    return `${hours}:${minutes}:${seconds}`;
+  };
+  const getCurrentDate = () => {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
   const UploadImageToServer = async (photo) => {
     const data = new FormData();
     // data.append('file', photo);
@@ -160,6 +177,19 @@ const MainScreen = ({ props, route, navigation }) => {
           const emotion_counts = responseJson.emotion_counts;
           // const { url, emotion_counts } = responseJson;
           setIsLoading(false);
+          const randomId = generateRandomId();
+          console.log(randomId);
+          const dataToStorage = {
+            id: randomId,
+            time: getCurrentTime(),
+            date: getCurrentDate(),
+            mainEmotion: "Unknown",
+            emoData:emotion_counts,
+            url: uri,
+            type: "image/jpeg",
+          }
+          const store = await storeData(dataToStorage);
+
           // // Navigate to ShowImageScreen with the retrieved URI
           nvg.navigate("ShowImageScreen/index", {
             uri: url,
@@ -197,6 +227,19 @@ const MainScreen = ({ props, route, navigation }) => {
           // const { url, emotion_counts } = responseJson;
           console.log("emoCount: ", emotion_counts);
           setIsLoading(false);
+          const randomId = generateRandomId();
+          console.log(randomId);
+
+          const dataToStorage = {
+            id: randomId,
+            time: getCurrentTime(),
+            date: getCurrentDate(),
+            mainEmotion: "Unknown",
+            emoData:emotion_counts,
+            url: uri,
+            type: "video/mp4",
+          }
+          await storeData(dataToStorage);
           // // Navigate to ShowImageScreen with the retrieved URI
           nvg.navigate("ShowImageScreen/index", {
             uri: url,
