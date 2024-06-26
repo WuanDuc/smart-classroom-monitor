@@ -36,10 +36,8 @@ const ShowImageScreen = () => {
 
   const saveImageToLocal = async (imageUrl: string) => {
     let splitUrl = imageUrl.split("/");
-    let temp = content_type.split("/");
     const fileUri = FileSystem.documentDirectory + splitUrl[7];
     await FileSystem.downloadAsync(imageUrl, fileUri);
-    console.log("Đường dẫn local:", fileUri);
     return fileUri;
   };
 
@@ -61,7 +59,6 @@ const ShowImageScreen = () => {
       });
     } catch (error) {
       Alert.alert("Error", "Failed to save image.");
-      console.log(error);
     }
   };
 
@@ -82,7 +79,6 @@ const ShowImageScreen = () => {
       await Sharing.shareAsync(fileUrl, shareOptions);
     } catch (error) {
       Alert.alert("Error", "Failed to share image.");
-      console.log(error);
     }
   };
 
