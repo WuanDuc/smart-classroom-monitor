@@ -21,7 +21,17 @@ export const getData = async () => {
     return [];
   }
 };
-
+export const deleteData = async (id) => {
+  try {
+    const existingData = await getData();
+    const updatedData = existingData.filter(item => item.id !== id);
+    const jsonValue = JSON.stringify(updatedData);
+    await AsyncStorage.setItem('historydata', jsonValue);
+    console.log('Data deleted successfully');
+  } catch (e) {
+    console.error('Failed to delete data', e);
+  }
+};
 
 export const quickSort = arr => {
   if (arr.length <= 1) {
