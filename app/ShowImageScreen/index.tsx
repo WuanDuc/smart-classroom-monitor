@@ -83,18 +83,10 @@ const ShowImageScreen = () => {
   };
 
   const goBackToHome = () => {
-    nav.goBack();
+    nav.navigate("(tabs)");
   };
 
-  const [dataChart, setDataChart] = useState([
-    { emoFull: "Neutral", emo: "neu", amount: 0 },
-    { emoFull: "Happy", emo: "hap", amount: 0 },
-    { emoFull: "Sad", emo: "sad", amount: 0 },
-    { emoFull: "Angry", emo: "ang", amount: 0 },
-    { emoFull: "Fear", emo: "fear", amount: 0 },
-    { emoFull: "Disgust", emo: "dis", amount: 0 },
-    { emoFull: "Surprise", emo: "sup", amount: 0 },
-  ]);
+  const [dataChart, setDataChart] = useState([]);
   const findMaxEmo = async (dataChart: any) => {
     let max: number = 0;
     dataChart.forEach((item) => {
