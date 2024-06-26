@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  Button,
+  Modal,
 } from "react-native";
 import FONTS from "../../constants/font";
 import { COLORS } from "../../constants/color";
@@ -17,7 +19,7 @@ import { useNavigation } from "expo-router";
 import { IMG_LOGO_TOGETHER, IMG_LOGO_UIT } from "../../assets/images/index";
 import HistoryCard from "@/components/HistoryCard";
 import * as FileSystem from "expo-file-system";
-import { getData } from "@/utils/utils";
+import { getData, deleteData } from "@/utils/utils";
 
 // create a component
 const HistoryScreen = () => {
@@ -109,7 +111,7 @@ const HistoryScreen = () => {
       type: "image/jpeg",
     },
   ]);
-
+  const [modalVisible, setModalVisible] = useState(false);
   const readFile = async () => {
     const fileUri = FileSystem.documentDirectory + "history.txt";
 
@@ -125,7 +127,13 @@ const HistoryScreen = () => {
       Alert.alert("Error", "Failed to read file: " + error.message);
     }
   };
-
+  const handleDelete = async (id) => {
+    const updatedHistory = history.filter(item => item.id !== id);
+    await deleteData(id);
+    const savedHistory = await getData();
+    setHistory(savedHistory);
+ 
+  };
   useEffect(() => {
     const loadHistory = async () => {
       
@@ -151,7 +159,7 @@ const HistoryScreen = () => {
       <ScrollView style={styles.scrollView}>
         <View style={{ height: scale(30) }} />
         {history.map((item, index) => {
-          return <HistoryCard key={index} data={item} />;
+          return <HistoryCard key={index} data={item} onDelete={handleDelete} />;
         })}
       </ScrollView>
     </SafeAreaView>
