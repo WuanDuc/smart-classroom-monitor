@@ -19,60 +19,55 @@ import {
 } from "../../assets/images/index";
 import FONTS from "../../constants/font";
 import { COLORS } from "../../constants/color";
-//import { Cloudinary } from "@cloudinary/url-gen";
-// import * as FS from 'expo-file-system';
 import * as ImagePicker from "expo-image-picker";
-import { storeData, getData } from "@/utils/utils";
-// import {Buffer} from 'buffer';
-// import axios from 'axios';
 import { useNavigation } from "expo-router";
 import * as FileSystem from "expo-file-system";
-// import * as FileSystem from 'expo-file-system';
 import scale from "../../constants/responsive";
 
 // create a component
-const MainScreen = ({ props, route, navigation }) => {
+const MainScreen = () => {
   const [cameraRollPer, setCameraRollPer] = useState(null);
-  const [disableButton, setDisableButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [file, setFile] = useState({});
-  const [uri, setUri] = useState();
   const nvg = useNavigation();
-  // const [timeLoading, setTimeLoading] = useState(0);
-  // const [uri, setUri] = useState();
-  // const countRef = useRef(null);
+  const [timeLoading, setTimeLoading] = useState<number>(0);
+  const countRef: any = useRef(null);
   const UploadImage = async () => {
-    console.log("acb");
     await ImagePicker.requestCameraPermissionsAsync();
     const permission = await ImagePicker.getCameraPermissionsAsync();
     permission.canAskAgain = true;
-    console.log(permission);
+    setIsLoading(false);
     if (permission == null || !permission.granted) {
       Alert.alert("We don't have Media Library Permission!");
       return;
     }
-    setIsLoading(true);
-
     await pickMedia();
   };
 
   const pickMedia = async () => {
-    setCameraRollPer(cameraRollPer), setDisableButton(true);
+    setCameraRollPer(cameraRollPer);
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
     });
     if (result.canceled) {
-      console.log("there is nothing");
       setIsLoading(false);
+      clearInterval(countRef.current);
+      setTimeLoading(0);
       return;
     }
-    // console.log('result:', result);
+    setIsLoading(true);
+    setTimeLoading(0);
+    countRef.current = setInterval(() => {
+      setTimeLoading((timeLoading) => timeLoading + 1);
+      if (timeLoading == 500) {
+        setIsLoading(false);
+        clearInterval(countRef.current);
+        setTimeLoading(0);
+      }
+    }, 1000);
     if (result.assets === null) {
       return;
     }
     if (result.assets[0].type === "image") {
-      console.log("uri", result.assets[0].uri);
-
       const uri = result.assets[0].uri;
       const fileInfo = await FileSystem.getInfoAsync(uri);
       const extension = fileInfo.uri.split(".").pop();
@@ -84,72 +79,26 @@ const MainScreen = ({ props, route, navigation }) => {
         type,
         name,
       };
-      console.log(source);
       await UploadImageToServer(source);
     } else {
       console.log(result);
       const uri = result.assets[0].uri;
-      const type = result.assets[0].type + "/mp4";
+      const type = result.assets[0].mimeType;
       const name = uri.split("/").pop();
       const source = {
         uri,
         type,
         name,
       };
-      console.log(source.name);
+      console.log("upload video");
+      console.log(uri);
+      console.log(type);
+      console.log(name);
       await UploadImageToServer(source);
     }
   };
-  const generateRandomId = () => {
-    return 'id-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
-  };
-  const getCurrentTime = () => {
-    const date = new Date();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-    return `${hours}:${minutes}:${seconds}`;
-  };
-  const getCurrentDate = () => {
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-  const UploadImageToServer = async (photo) => {
-    const data = new FormData();
-    // data.append('file', photo);
-    // data.append('upload_preset', 'videoApp');
-    // data.append('cloud_name', 'dpej7xgsi');
-    // fetch('https://api.cloudinary.com/v1_1/dpej7xgsi/image/upload', {
-    //   method: 'POST',
-    //   body: data,
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // })
-    //   .then(res => res.json())
-    //   .then(async data => {
-    //     console.log(data);
-    //     console.log('ok, go to server');
-    //     console.log(data.url);
-    //     // await toServer({
-    //     //   type: 'image',
-    //     //   base64: data.url,
-    //     //   uri: data.url,
-    //     // });
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //     Alert.alert(
-    //       'Lỗi tải file',
-    //       'Quá trình tải file lên server gặp lỗi, vui lòng thử lại\nStatus code: ' +
-    //         error,
-    //     );
-    //     setIsLoading(false);
-    //   });
+
+  const UploadImageToServer = async (photo: any) => {
     const formData = new FormData();
     const file = {
       uri: photo.uri,
@@ -157,12 +106,10 @@ const MainScreen = ({ props, route, navigation }) => {
       name: photo.name,
     };
     formData.append("file", file);
-    console.log(file);
     if (file.type.match(/^image\//)) {
       const res = await fetch(
         "https://facedetectionbackend-adcg.onrender.com/image",
         {
-          // const res = await fetch('http://192.168.1.113:5000/image', {
           method: "POST",
           body: formData,
           headers: {
@@ -171,43 +118,91 @@ const MainScreen = ({ props, route, navigation }) => {
           },
         }
       )
-        .then((response) => response.json())
-        .then(async (responseJson) => {
-          const url = responseJson.url;
-          const emotion_counts = responseJson.emotion_counts;
-          // const { url, emotion_counts } = responseJson;
-          setIsLoading(false);
-          const randomId = generateRandomId();
-          console.log(randomId);
-          const dataToStorage = {
-            id: randomId,
-            time: getCurrentTime(),
-            date: getCurrentDate(),
-            mainEmotion: "Unknown",
-            emoData:emotion_counts,
-            url: uri,
-            type: "image/jpeg",
-          }
-          const store = await storeData(dataToStorage);
+        // .then((response) => {
+        //   // JSON.parse(JSON.stringify(response));
+        //   console.log("ok: ", response.ok);
 
-          // // Navigate to ShowImageScreen with the retrieved URI
-          nvg.navigate("ShowImageScreen/index", {
-            uri: url,
-            content_type: file.type,
-            emotion: JSON.stringify(emotion_counts),
-            isHistory: "false",
-          });
+        //   if (response.ok == false) {
+        //     return;
+        //   }
+        //   const url = response.url;
+        //   const emotion_counts = response.emotion_counts;
+        //   setIsLoading(false);
+        //   clearInterval(countRef.current);
+        //   setTimeLoading(0);
+
+        //   nvg.navigate("ShowImageScreen/index", {
+        //     uri: url,
+        //     content_type: file.type,
+        //     emotion: JSON.stringify(emotion_counts),
+        //     isHistory: "false",
+        //   });
+        // })
+        .then((response) => {
+          console.log(response);
+          if (response.ok == true) {
+            response.json().then(async (responseJson) => {
+              console.log(responseJson);
+              // if (responseJson.ok == false) {
+              //   return;
+              // }
+              const url = responseJson.url;
+              const emotion_counts = responseJson.emotion_counts;
+              setIsLoading(false);
+              clearInterval(countRef.current);
+              setTimeLoading(0);
+
+              nvg.navigate("ShowImageScreen/index", {
+                uri: url,
+                content_type: file.type,
+                emotion: JSON.stringify(emotion_counts),
+                isHistory: "false",
+              });
+            });
+          } else {
+            Alert.alert(
+              "Detection process failed",
+              "An error occurred during the detection process, please try again in a few minutes.\nStatus code: " +
+                response.status
+            );
+            setIsLoading(false);
+            clearInterval(countRef.current);
+            setTimeLoading(0);
+          }
         })
+        // .then(async (responseJson) => {
+        //   console.log(responseJson);
+        //   if (responseJson.ok == false) {
+        //     return;
+        //   }
+        //   const url = responseJson.url;
+        //   const emotion_counts = responseJson.emotion_counts;
+        //   setIsLoading(false);
+        //   clearInterval(countRef.current);
+        //   setTimeLoading(0);
+
+        //   nvg.navigate("ShowImageScreen/index", {
+        //     uri: url,
+        //     content_type: file.type,
+        //     emotion: JSON.stringify(emotion_counts),
+        //     isHistory: "false",
+        //   });
+        // })
         .catch((error) => {
-          console.error("Error:", error);
+          Alert.alert(
+            "Detection process failed",
+            "An error occurred during the detection process, please try again in a few minutes.\nStatus code: " +
+              error
+          );
           setIsLoading(false);
+          clearInterval(countRef.current);
+          setTimeLoading(0);
         });
-      console.log(res);
+      console.log("image res: ", res);
     } else {
       const res = await fetch(
         "https://facedetectionbackend-adcg.onrender.com/video",
         {
-          // const res = await fetch("http://192.168.1.113:5000/video", {
           method: "POST",
           body: formData,
           headers: {
@@ -216,136 +211,77 @@ const MainScreen = ({ props, route, navigation }) => {
           },
         }
       )
-        .then((response) => response.json())
-        .then(async (responseJson) => {
-          console.log("Response:", responseJson);
-          console.log("Response:", responseJson);
+        // .then((response) => {
+        //   try {
+        //     console.log(response.ok);
+        //     JSON.parse(response);
+        //   } catch (error: any) {
+        //     Alert.alert("Fail", "Detection process failed");
+        //     return;
+        //   }
+        // })
+        // .then((response) => response.json())
+        // .then(async (responseJson) => {
+        //   if (responseJson.ok == false) {
+        //     return;
+        //   }
+        //   const url = responseJson.url;
+        //   const emotion_counts = responseJson.emotion_counts;
 
-          // Assuming responseJson contains the URI of the uploaderd image
-          const url = responseJson.url;
-          const emotion_counts = responseJson.emotion_counts;
-          // const { url, emotion_counts } = responseJson;
-          console.log("emoCount: ", emotion_counts);
-          setIsLoading(false);
-          const randomId = generateRandomId();
-          console.log(randomId);
+        //   setIsLoading(false);
+        //   clearInterval(countRef.current);
+        //   setTimeLoading(0);
+        //   nvg.navigate("ShowImageScreen/index", {
+        //     uri: url,
+        //     content_type: file.type,
+        //     emotion: JSON.stringify(emotion_counts),
+        //     isHistory: "false",
+        //   });
+        // })
+        .then((response) => {
+          console.log(response);
+          if (response.ok == true) {
+            response.json().then(async (responseJson) => {
+              console.log(responseJson);
+              // if (responseJson.ok == false) {
+              //   return;
+              // }
+              const url = responseJson.url;
+              const emotion_counts = responseJson.emotion_counts;
+              setIsLoading(false);
+              clearInterval(countRef.current);
+              setTimeLoading(0);
 
-          const dataToStorage = {
-            id: randomId,
-            time: getCurrentTime(),
-            date: getCurrentDate(),
-            mainEmotion: "Unknown",
-            emoData:emotion_counts,
-            url: uri,
-            type: "video/mp4",
+              nvg.navigate("ShowImageScreen/index", {
+                uri: url,
+                content_type: file.type,
+                emotion: JSON.stringify(emotion_counts),
+                isHistory: "false",
+              });
+            });
+          } else {
+            Alert.alert(
+              "Detection process failed",
+              "An error occurred during the detection process, please try again in a few minutes.\nStatus code: " +
+                response.status
+            );
+            setIsLoading(false);
+            clearInterval(countRef.current);
+            setTimeLoading(0);
           }
-          await storeData(dataToStorage);
-          // // Navigate to ShowImageScreen with the retrieved URI
-          nvg.navigate("ShowImageScreen/index", {
-            uri: url,
-            content_type: file.type,
-            emotion: emotion_counts,
-            isHistory: "false",
-          });
         })
         .catch((error) => {
-          console.error("Error:", error);
-          Alert.alert("Error", error);
+          Alert.alert(
+            "Detection process failed",
+            "An error occurred during the detection process, please try again in a few minutes.\nStatus code: " +
+              error
+          );
           setIsLoading(false);
+          clearInterval(countRef.current);
+          setTimeLoading(0);
         });
-      console.log(res);
     }
   };
-  const cloudinaryUpload = async (photo) => {
-    const data = new FormData();
-    data.append("file", photo);
-    data.append("upload_preset", "videoApp");
-    data.append("cloud_name", "dpej7xgsi");
-    fetch("https://api.cloudinary.com/v1_1/dpej7xgsi/video/upload", {
-      method: "POST",
-      body: data,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        console.log(data);
-        console.log("ok, go to server");
-        console.log(data.url);
-        // await toServer({
-        //   type: 'video',
-        //   base64: data.url,
-        //   uri: data.url,
-        // });
-      })
-      .catch((error) => {
-        console.log(error);
-        Alert.alert(
-          "Lỗi tải file",
-          "Quá trình tải file lên server gặp lỗi, vui lòng thử lại\nStatus code: " +
-            error
-        );
-        setIsLoading(false);
-      });
-  };
-  // const cloudinaryUpdate = async photo => {
-  //   const data = new FormData();
-  //   data.append('file', photo);
-  //   data.append('upload_preset', 'videoApp');
-  //   data.append('cloud_name', 'dpej7xgsi');
-  //   fetch(
-  //     'https://api.cloudinary.com/v1_1/dpej7xgsi/video/upload/v1702289247/xlyelkfr75ccs4mp4mcw.mp4',
-  //     {
-  //       method: 'PUT',
-  //       body: data,
-  //       headers: {
-  //         Accept: 'application/json',
-  //       },
-  //     },
-  //   )
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       console.log(data);
-  //       setIsLoading(true);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       Alert.alert(
-  //         'Lỗi tải file',
-  //         'Quá trình tải file lên server gặp lỗi, vui lòng thử lại\nStatus code: ' +
-  //           error,
-  //       );
-  //       setIsLoading(false);
-  //       clearInterval(countRef.current);
-  //       setTimeLoading(0);
-  //     });
-  // };
-
-  // const pickupMedia = async ()=> {
-  //   let result = await launchImageLibrary({mediaType: "mixed"});
-  //   console.log(result);
-  //   if (!result.didCancel && result.assets && result.assets.length > 0) {
-  //     const {fileName, uri, type} = result.assets[0];
-  //     //console.log(uri);
-  //     const extension = uri.split('.').pop();
-  //     const name = uri.split('/').pop();
-  //    // const originPath = result.assets[0].originalPath;
-
-  //     console.log(name);
-  //     const source = {
-  //       uri,
-  //       type,
-  //       name,
-  //     };
-  //     console.log(source);
-  //     setFile(source);
-  //     await cloudinaryUploadImage();
-  //     navigation.navigate('ShowScreen', { uri });
-  //   }
-
-  // }
 
   const handleHistory = () => {
     nvg.navigate("History/index");
@@ -363,8 +299,26 @@ const MainScreen = ({ props, route, navigation }) => {
       />
       <View style={styles.mainView}>
         <Image source={IMG_APPICON} />
-        <Text style={[styles.text, { marginBottom: scale(20), fontSize: 30 }]}>
-          EmoScan - Classroom Monitoring
+        <Text
+          style={[
+            styles.text,
+            {
+              marginTop: scale(10),
+              textAlign: "center",
+              fontSize: 30,
+              width: "85%",
+            },
+          ]}
+        >
+          EmoScan
+        </Text>
+        <Text
+          style={[
+            styles.text,
+            { marginBottom: scale(25), fontSize: 30, width: "85%" },
+          ]}
+        >
+          Classroom Monitoring
         </Text>
         <TouchableOpacity
           onPress={UploadImage}
@@ -391,9 +345,9 @@ const MainScreen = ({ props, route, navigation }) => {
           <Image style={styles.buttonImage} source={IMG_HISTORY} />
         </TouchableOpacity>
       </View>
-      {/* <Text style={[styles.waitingText, {opacity: isLoading ? 1 : 0}]}>
-        {'Wait for the detection process ... (' + timeLoading + 's)'}
-      </Text> */}
+      <Text style={[styles.waitingText, { opacity: isLoading ? 1 : 0 }]}>
+        {"Wait for the detection process ... (" + timeLoading + "s)"}
+      </Text>
     </SafeAreaView>
   );
 };
@@ -402,7 +356,6 @@ const MainScreen = ({ props, route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
     alignItems: "center",
     backgroundColor: COLORS.lightGreen,
   },
@@ -448,7 +401,7 @@ const styles = StyleSheet.create({
   waitingText: {
     color: COLORS.black,
     position: "absolute",
-    bottom: 10,
+    bottom: scale(60),
     fontFamily: FONTS.Lato.Bold,
     fontSize: 20,
   },
