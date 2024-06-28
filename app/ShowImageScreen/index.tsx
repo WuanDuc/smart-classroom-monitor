@@ -382,7 +382,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: COLORS.grayButton,
     paddingHorizontal: 15,
-    paddingVertical: 5,
     borderRadius: 23,
     borderColor: COLORS.green,
     borderWidth: 2,

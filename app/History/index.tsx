@@ -45,7 +45,7 @@ const HistoryScreen = () => {
       </View>
       <ScrollView style={styles.scrollView}>
         <View style={{ height: scale(30) }} />
-        {history.map((item, index) => {
+        {history.reverse().map((item, index) => {
           return (
             <View key={index}>
               <HistoryCard data={item} onDelete={handleDelete} />
