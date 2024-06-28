@@ -1,39 +1,40 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 
 export const storeData = async (newData) => {
   try {
     const existingData = await getData();
     const updatedData = existingData ? [...existingData, newData] : [newData];
     const jsonValue = JSON.stringify(updatedData);
-    await AsyncStorage.setItem('historydata', jsonValue);
-    console.log('Data stored successfully');
+    await AsyncStorage.setItem("historydata", jsonValue);
+    console.log("Data stored successfully");
   } catch (e) {
-    console.error('Failed to store data', e);
+    console.error("Failed to store data", e);
   }
 };
 
 export const getData = async () => {
   try {
-    const jsonValue = await AsyncStorage.getItem('historydata');
+    const jsonValue = await AsyncStorage.getItem("historydata");
     return jsonValue != null ? JSON.parse(jsonValue) : [];
   } catch (e) {
-    console.error('Failed to fetch data', e);
+    Alert.alert("Failed to get history data", e);
     return [];
   }
 };
 export const deleteData = async (id) => {
   try {
     const existingData = await getData();
-    const updatedData = existingData.filter(item => item.id !== id);
+    const updatedData = existingData.filter((item) => item.id !== id);
     const jsonValue = JSON.stringify(updatedData);
-    await AsyncStorage.setItem('historydata', jsonValue);
-    console.log('Data deleted successfully');
+    await AsyncStorage.setItem("historydata", jsonValue);
+    console.log("Data deleted successfully");
   } catch (e) {
-    console.error('Failed to delete data', e);
+    console.error("Failed to delete data", e);
   }
 };
 
-export const quickSort = arr => {
+export const quickSort = (arr) => {
   if (arr.length <= 1) {
     return arr;
   }
@@ -54,7 +55,7 @@ export const quickSort = arr => {
 };
 
 export const newShade = (hexColor, magnitude) => {
-  hexColor = hexColor.replace('#', '');
+  hexColor = hexColor.replace("#", "");
   if (hexColor.length === 6) {
     const decimalColor = parseInt(hexColor, 16);
     let r = (decimalColor >> 16) + magnitude;

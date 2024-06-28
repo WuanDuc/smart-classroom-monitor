@@ -1,11 +1,19 @@
 //import liraries
-import { IMG_SHARE } from "@/assets/images";
+import { IMG_DELETE } from "@/assets/images";
 import { COLORS } from "@/constants/color";
 import FONTS from "@/constants/font";
 import scale from "@/constants/responsive";
 import { useNavigation } from "expo-router";
 import React, { Component, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, Button } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Modal,
+  Button,
+} from "react-native";
 import { deleteData } from "@/utils/utils";
 
 // create a component
@@ -31,7 +39,6 @@ const HistoryCard = ({ data, onDelete }) => {
     setModalVisible(false);
   };
 
-
   return (
     <TouchableOpacity
       style={styles.container}
@@ -43,7 +50,7 @@ const HistoryCard = ({ data, onDelete }) => {
         {"Main Emotion: " + data.mainEmotion}
       </Text>
       <TouchableOpacity onPress={handleDeletePress}>
-        <Image style={styles.image} source={IMG_SHARE}  />
+        <Image style={styles.image} source={IMG_DELETE} />
       </TouchableOpacity>
       <Modal
         animationType="slide"
@@ -54,10 +61,19 @@ const HistoryCard = ({ data, onDelete }) => {
         }}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Are you sure you want to delete this item?</Text>
+          <Text style={styles.modalText}>
+            Are you sure you want to delete this item?
+          </Text>
           <View style={styles.buttonContainer}>
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-            <Button title="Delete" onPress={confirmDelete} />
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={confirmDelete} style={styles.button}>
+              <Text style={styles.buttonText}>Delete</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -69,7 +85,7 @@ const HistoryCard = ({ data, onDelete }) => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: scale(70),
+    height: scale(80),
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
@@ -82,15 +98,18 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: FONTS.Lato.Medium,
     fontSize: 18,
+    lineHeight: 25,
   },
   image: {
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
     alignSelf: "flex-end",
     overflow: "visible",
+    marginRight: 10,
   },
   modalView: {
-    margin: 20,
+    marginTop: scale(200),
+    marginHorizontal: scale(20),
     backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
@@ -103,13 +122,29 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
+    fontFamily: FONTS.Lato.Medium,
+    lineHeight: scale(30),
     textAlign: "center",
     fontSize: 18,
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     width: "100%",
+  },
+  buttonText: {
+    fontFamily: FONTS.Lato.Medium,
+    fontSize: 18,
+  },
+  button: {
+    backgroundColor: COLORS.green,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    borderRadius: scale(20),
+    borderWidth: 1,
+    width: 80,
+    height: scale(50),
   },
 });
 
