@@ -19,15 +19,10 @@ import {
 } from "../../assets/images/index";
 import FONTS from "../../constants/font";
 import { COLORS } from "../../constants/color";
-//import { Cloudinary } from "@cloudinary/url-gen";
-// import * as FS from 'expo-file-system';
 import * as ImagePicker from "expo-image-picker";
 import { storeData, getData } from "@/utils/utils";
-// import {Buffer} from 'buffer';
-// import axios from 'axios';
 import { useNavigation } from "expo-router";
 import * as FileSystem from "expo-file-system";
-// import * as FileSystem from 'expo-file-system';
 import scale from "../../constants/responsive";
 
 // create a component
@@ -89,7 +84,12 @@ const MainScreen = ({ props, route, navigation }) => {
     } else {
       console.log(result);
       const uri = result.assets[0].uri;
-      const type = result.assets[0].type + "/mp4";
+      const fileInfo = await FileSystem.getInfoAsync(uri);
+
+      //const type = result.assets[0].type + "/mp4";
+      const extension = fileInfo.uri.split(".").pop();
+      console.log(extension);
+      const type = result.assets[0].type + "/" + extension;
       const name = uri.split("/").pop();
       const source = {
         uri,
@@ -188,7 +188,7 @@ const MainScreen = ({ props, route, navigation }) => {
             url: uri,
             type: "image/jpeg",
           }
-          const store = await storeData(dataToStorage);
+           await storeData(dataToStorage);
 
           // // Navigate to ShowImageScreen with the retrieved URI
           nvg.navigate("ShowImageScreen/index", {
@@ -256,97 +256,6 @@ const MainScreen = ({ props, route, navigation }) => {
       console.log(res);
     }
   };
-  const cloudinaryUpload = async (photo) => {
-    const data = new FormData();
-    data.append("file", photo);
-    data.append("upload_preset", "videoApp");
-    data.append("cloud_name", "dpej7xgsi");
-    fetch("https://api.cloudinary.com/v1_1/dpej7xgsi/video/upload", {
-      method: "POST",
-      body: data,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        console.log(data);
-        console.log("ok, go to server");
-        console.log(data.url);
-        // await toServer({
-        //   type: 'video',
-        //   base64: data.url,
-        //   uri: data.url,
-        // });
-      })
-      .catch((error) => {
-        console.log(error);
-        Alert.alert(
-          "Lỗi tải file",
-          "Quá trình tải file lên server gặp lỗi, vui lòng thử lại\nStatus code: " +
-            error
-        );
-        setIsLoading(false);
-      });
-  };
-  // const cloudinaryUpdate = async photo => {
-  //   const data = new FormData();
-  //   data.append('file', photo);
-  //   data.append('upload_preset', 'videoApp');
-  //   data.append('cloud_name', 'dpej7xgsi');
-  //   fetch(
-  //     'https://api.cloudinary.com/v1_1/dpej7xgsi/video/upload/v1702289247/xlyelkfr75ccs4mp4mcw.mp4',
-  //     {
-  //       method: 'PUT',
-  //       body: data,
-  //       headers: {
-  //         Accept: 'application/json',
-  //       },
-  //     },
-  //   )
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       console.log(data);
-  //       setIsLoading(true);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       Alert.alert(
-  //         'Lỗi tải file',
-  //         'Quá trình tải file lên server gặp lỗi, vui lòng thử lại\nStatus code: ' +
-  //           error,
-  //       );
-  //       setIsLoading(false);
-  //       clearInterval(countRef.current);
-  //       setTimeLoading(0);
-  //     });
-  // };
-
-  // const pickupMedia = async ()=> {
-  //   let result = await launchImageLibrary({mediaType: "mixed"});
-  //   console.log(result);
-  //   if (!result.didCancel && result.assets && result.assets.length > 0) {
-  //     const {fileName, uri, type} = result.assets[0];
-  //     //console.log(uri);
-  //     const extension = uri.split('.').pop();
-  //     const name = uri.split('/').pop();
-  //    // const originPath = result.assets[0].originalPath;
-
-  //     console.log(name);
-  //     const source = {
-  //       uri,
-  //       type,
-  //       name,
-  //     };
-  //     console.log(source);
-  //     setFile(source);
-  //     await cloudinaryUploadImage();
-  //     navigation.navigate('ShowScreen', { uri });
-  //   }
-
-  // }
-
   const handleHistory = () => {
     nvg.navigate("History/index");
   };
