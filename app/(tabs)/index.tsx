@@ -108,7 +108,9 @@ const MainScreen = () => {
     formData.append("file", file);
     if (file.type.match(/^image\//)) {
       const res = await fetch(
-        "https://facedetectionbackend-adcg.onrender.com/image",
+        "http://10.172.6.5:5000/image",
+      // const res = await fetch(
+      //   "https://facedetectionbackend-adcg.onrender.com/image",
         {
           method: "POST",
           body: formData,
@@ -200,8 +202,9 @@ const MainScreen = () => {
         });
       console.log("image res: ", res);
     } else {
-      const res = await fetch(
-        "https://facedetectionbackend-adcg.onrender.com/video",
+      const res = await fetch(       
+        "http://10.172.6.5:5000/video",
+        // "https://facedetectionbackend-adcg.onrender.com/video",
         {
           method: "POST",
           body: formData,

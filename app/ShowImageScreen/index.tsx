@@ -390,7 +390,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: COLORS.grayButton,
     paddingHorizontal: 15,
-    paddingVertical: 5,
     borderRadius: 23,
     borderColor: COLORS.green,
     borderWidth: 2,
@@ -399,6 +398,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowRadius: 23,
     shadowOffset: { width: 1, height: 13 },
+    textAlign: 'center'
   },
   mainModalView: {
     flex: 1,
@@ -451,6 +451,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "90%",
     height: scale(80),
+    textAlign: 'center'
   },
   iconApp: {
     width: 60,
