@@ -28,7 +28,6 @@ const HistoryScreen = () => {
   useEffect(() => {
     const loadHistory = async () => {
       const savedHistory = await getData();
-      console.log(savedHistory);
 
       if (savedHistory) {
         setHistory(savedHistory);
@@ -46,9 +45,16 @@ const HistoryScreen = () => {
       </View>
       <ScrollView style={styles.scrollView}>
         <View style={{ height: scale(30) }} />
-        {history.map((item, index) => {
+        {history.reverse().map((item, index) => {
           return (
-            <HistoryCard key={index} data={item} onDelete={handleDelete} />
+            <View key={index}>
+              <HistoryCard data={item} onDelete={handleDelete} />
+              {index == history.length - 1 ? (
+                <></>
+              ) : (
+                <View style={{ marginBottom: scale(20) }} />
+              )}
+            </View>
           );
         })}
       </ScrollView>
@@ -86,7 +92,7 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "justify",
     paddingHorizontal: 20,
-    marginBottom: 40,
+    // marginBottom: 40,
   },
   text: {
     fontFamily: FONTS.Lato.Bold,

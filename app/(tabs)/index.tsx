@@ -318,7 +318,12 @@ const MainScreen = () => {
         <Text
           style={[
             styles.text,
-            { marginBottom: scale(25), fontSize: 30, width: "85%" },
+            {
+              marginBottom: scale(25),
+              fontSize: 30,
+              width: "85%",
+              textAlign: "center",
+            },
           ]}
         >
           Classroom Monitoring

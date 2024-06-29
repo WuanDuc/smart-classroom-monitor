@@ -22,7 +22,6 @@ const HistoryCard = ({ data, onDelete }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleItemPress = (data) => {
-    console.log(data);
     nvg.navigate("ShowImageScreen/index", {
       uri: data.url,
       content_type: data.type,
@@ -93,7 +92,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: scale(20),
     backgroundColor: COLORS.grayButton,
-    marginBottom: scale(20),
   },
   text: {
     fontFamily: FONTS.Lato.Medium,
