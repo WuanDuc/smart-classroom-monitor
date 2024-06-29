@@ -4,9 +4,13 @@
     "displayName": "EmoScan",
     "scheme": "EmoScan",
     "slug": "my-app",
-    "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-firebase/auth"
-    ]
+    "extra": {
+      "eas": {
+        "projectId": "97929ddf-a612-40c8-b6db-8f4746c5dde8"
+      }
+    },
+    "android": {
+      "package": "com.ducquan.myapp"
+    }
   }
 }
